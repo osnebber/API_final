@@ -154,21 +154,23 @@ def explore_neighbors(X,i,k=15):
     plt.ylim([y_0-xy_range/2,y_0+xy_range/2])
     
     # plt.legend(bbox_to_anchor=(1.05, 1),loc='upper left', borderaxespad=0.,ncol=3)
-    plt.legend(bbox_to_anchor=(1.2, 1),loc='upper left', borderaxespad=0.,ncol=3)
+    plt.legend(bbox_to_anchor=(1.07, 1),loc='upper left', borderaxespad=0.,ncol=3)
     
 #     plt.show()
     ax=fig.axes[0]
-    return fig,ax,top_index,top_sim
+    return fig,ax,top_index,top_sim,X_hat
 
 
 test_i=np.random.randint(len(x_deep_embedded))#15
-fig,ax,top_index,top_sim=explore_neighbors(x_deep_embedded,test_i)
+fig,ax,top_index,top_sim,X_hat=explore_neighbors(x_deep_embedded,test_i)
 top_names=[names[i] for i in top_index]
+top_x=[X_hat[i] for i in top_index]
 print(test_i)
 
 
 top_names=[names[test_i]]+top_names
-top_sim=[1]+[top_sim]
+top_sim=["original"]+top_sim
+top_x=[X_hat[0]]+top_x
 
 from DiscoveryMap import DiscoveryMap
-DiscoveryMap(fig,ax,dirs=top_names,similarities=top_sim)
+DiscoveryMap(fig,ax,dirs=top_names,similarities=top_sim,X=top_x)
