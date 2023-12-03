@@ -164,11 +164,27 @@ def explore_neighbors(X,i,k=15,return_all_songs=False):
     return fig,ax,top_index,top_sim,X_hat
 
 
-test_i=np.random.randint(len(x_deep_embedded))#15
-fig,ax,top_index,top_sim,X_hat=explore_neighbors(x_deep_embedded,test_i,return_all_songs=True)
+
+
+
+
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('-i','--index', type=int, help='Specify index explore', required=False)
+parser.add_argument('-k','--top_k', help='Return only top k similarities', action='store_true')
+args = vars(parser.parse_args())
+
+if args["index"]:
+    test_i=args["index"]
+else:
+    test_i=np.random.randint(len(x_deep_embedded))
+
+return_all_songs=not args["top_k"]
+
+fig,ax,top_index,top_sim,X_hat=explore_neighbors(x_deep_embedded,test_i,return_all_songs=return_all_songs)
 top_names=[names[i] for i in top_index]
 top_x=[X_hat[i] for i in top_index]
-print(test_i)
+print("Song index:",test_i)
 
 
 top_names=[names[test_i]]+top_names
