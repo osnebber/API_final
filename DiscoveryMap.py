@@ -32,7 +32,7 @@ class DiscoveryMap:
 
 
         ##File loading
-        self.dataset_path = 'genres_original'
+        self.dataset_path = 'data/genres_original'
         self.dirs=dirs
         self.sim=similarities
         self.index=0

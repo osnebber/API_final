@@ -9,7 +9,7 @@ import cv2
 import matplotlib.pyplot as plt 
 
 # Specify the path to the output directory
-spec_path = 'spectrograms_computed/'
+spec_path = 'data/spectrograms_computed/'
 
 # Iterate through the files and subdirectories in the output directory
 for item in os.listdir(spec_path):
@@ -43,15 +43,15 @@ def spectrogram_creation(audio_path,spectrogram_path):
 'Iterate throught the genres folders, compute the spectograms and create the new spectrogram dataset'
 
 try:
-    os.makedirs("spectrograms_computed")
+    os.makedirs("data/spectrograms_computed")
 except FileExistsError:
     pass
 filenames = ['blues', 'classical', 'country', 'disco', 'hiphop','jazz', 'metal', 'pop', 'reggae', 'rock']
 for filename in filenames: 
-    os.makedirs("Spectrograms_computed/"+filename)
+    os.makedirs("data/Spectrograms_computed/"+filename)
 
 
-dataset_path = 'genres_original'
+dataset_path = 'data/genres_original'
 
 dataset_spec = []
 

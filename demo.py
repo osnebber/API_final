@@ -10,7 +10,7 @@ import tensorflow as tf
 from sklearn.manifold import TSNE
 
 # Define the parent directory you want to analyze
-parent_directory = 'spectrograms_computed'  
+parent_directory = 'data/spectrograms_computed'  
 
 # Create an empty dictionary to store directory names and file counts
 directory_file_counts = {}
@@ -28,7 +28,7 @@ for root, dirs, files in os.walk(parent_directory):
 # for directory, file_count in directory_file_counts.items():
 #     print(f"Directory: {directory}, File Count: {file_count}")
 
-classes = [a for a in os.listdir('genres_original') if '.' not in a]
+classes = [a for a in os.listdir('data\genres_original') if '.' not in a]
 # print(classes)
 
 
@@ -65,7 +65,7 @@ X = np.array(X) / 255.
 Y = np.array(Y)
 
 
-loaded_model = tf.keras.models.load_model("models\MobileNetModel.keras")
+loaded_model = tf.keras.models.load_model("data/models/MobileNetModel.keras")
 embedding_deep_model=keras.Model(loaded_model.input,loaded_model.layers[-3].output)
 
 genreLabelsDic = {
@@ -88,7 +88,7 @@ print("Embedding the songs...")
 # x_deep_embedded=embedding_deep_model.predict(X)
 # np.save("embedded_X",x_deep_embedded)
 
-x_deep_embedded=np.load("embedded_X.npy")
+x_deep_embedded=np.load("data\embedded_X.npy")
 
 def cosine_similarity(A,B):
     return np.dot(A,B)/(np.linalg.norm(A)*np.linalg.norm(B))
@@ -101,11 +101,12 @@ def k_closest_neighbors(X,i,k=1):
     order=np.delete(order,np.where(order==i))
     top_k_order=order[:k]
     top_k_similarity=[similarity[j] for j in top_k_order]
-    return top_k_order, top_k_similarity
+    sorted_similarity=[similarity[j] for j in order]
+    return top_k_order, top_k_similarity, order, sorted_similarity
 
 
-def explore_neighbors(X,i,k=15):
-    top_index,top_sim=k_closest_neighbors(X,i,k)
+def explore_neighbors(X,i,k=15,return_all_songs=False):
+    top_index,top_sim,sorted_index,sorted_sim=k_closest_neighbors(X,i,k)
     
     fig=plt.figure()
 
@@ -123,7 +124,7 @@ def explore_neighbors(X,i,k=15):
         interpolated_w=relative_sim*max_w+(1-relative_sim)*min_w
         plt.plot([X_hat[i,0],X_hat[index,0]],[X_hat[i,1],X_hat[index,1]],
                  c='k',alpha=interpolated_a,linewidth=interpolated_w,
-                zorder=0)
+                zorder=1)
         plt.scatter(X_hat[index,0],X_hat[index,1], marker="o", s=50,
                  c='k',alpha=interpolated_a,linewidth=interpolated_w,
                 zorder=-1)
@@ -136,7 +137,7 @@ def explore_neighbors(X,i,k=15):
 
     sns.scatterplot(x="comp-1", y="comp-2", hue=df.y.tolist(),
                     palette=sns.color_palette("colorblind", 10),
-                    data=df)
+                    data=df,zorder=0)
     
     plt.scatter(X_hat[i,0],X_hat[i,1],marker="*",s=100,
                 color=sns.color_palette("colorblind", 10)[Y[i]],
@@ -158,11 +159,13 @@ def explore_neighbors(X,i,k=15):
     
 #     plt.show()
     ax=fig.axes[0]
+    if return_all_songs:
+        return fig,ax,sorted_index,sorted_sim,X_hat
     return fig,ax,top_index,top_sim,X_hat
 
 
 test_i=np.random.randint(len(x_deep_embedded))#15
-fig,ax,top_index,top_sim,X_hat=explore_neighbors(x_deep_embedded,test_i)
+fig,ax,top_index,top_sim,X_hat=explore_neighbors(x_deep_embedded,test_i,return_all_songs=True)
 top_names=[names[i] for i in top_index]
 top_x=[X_hat[i] for i in top_index]
 print(test_i)
